@@ -1,0 +1,19 @@
+# Credenciales: nunca las subas al repositorio
+.env
+
+# Node
+node_modules/
+
+# PHP
+vendor/
+var/
+
+# Java
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Editores y SO
+.idea/
+.vscode/
+*.iml
+.DS_Store
