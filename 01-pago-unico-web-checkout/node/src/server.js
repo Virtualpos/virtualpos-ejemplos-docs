@@ -10,6 +10,7 @@ const vp = new Virtualpos({
 });
 const PUBLIC_URL = (process.env.PUBLIC_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 const PORT = Number(process.env.PORT ?? 3000);
+const CUSTOMER_EMAIL = 'cliente@example.com'; // en tu sistema, el email de tu cliente
 
 // En tu sistema esto sería tu base de datos de pedidos.
 const orders = new Map(); // orderId -> { orderId, amount, uuid, status }
@@ -33,7 +34,7 @@ app.post('/pagar', async (_req, res) => {
   try {
     const { payment, url_redirect } = await vp.createPayment({
       amount,
-      email: 'cliente@example.com',
+      email: CUSTOMER_EMAIL,
       social_id: '11111111-1',
       first_name: 'Ana',
       last_name: 'Pérez',
@@ -78,10 +79,12 @@ app.post('/anular/:orderId', async (req, res) => {
   const order = orders.get(req.params.orderId);
   if (!order || order.status !== 'pagado') return res.status(404).send(page('Pedido no encontrado', ''));
   try {
-    const refund = await vp.refundPayment(order.uuid, order.amount);
+    const refund = await vp.refundPayment(order.uuid, order.amount, CUSTOMER_EMAIL);
     order.status = 'anulado';
+    console.log(`Pedido ${order.orderId} anulado (${refund.status})`);
     res.send(page('Pago anulado', `<p>Estado de la anulación: <strong>${refund.status}</strong></p><p><a href="/">Volver</a></p>`));
   } catch (err) {
+    console.error(`No se pudo anular ${order.orderId}: ${err.message}`);
     res.status(502).send(page('No se pudo anular', errorHtml(err)));
   }
 });

@@ -22,6 +22,7 @@ import org.springframework.web.util.HtmlUtils;
 public class TiendaController {
 
 	private static final Logger log = LoggerFactory.getLogger(TiendaController.class);
+	private static final String CUSTOMER_EMAIL = "cliente@example.com"; // en tu sistema, el email de tu cliente
 	private static final Set<String> FINAL = Set.of("pagado", "rechazado", "expirado", "cancelado", "anulado");
 
 	/** Un pedido de tu sistema. */
@@ -65,7 +66,7 @@ public class TiendaController {
 		int amount = 9990;
 		Map<String, Object> res = vp.createPayment(Map.ofEntries(
 				Map.entry("amount", amount),
-				Map.entry("email", "cliente@example.com"),
+				Map.entry("email", CUSTOMER_EMAIL),
 				Map.entry("social_id", "11111111-1"),
 				Map.entry("first_name", "Ana"),
 				Map.entry("last_name", "Pérez"),
@@ -132,8 +133,9 @@ public class TiendaController {
 		if (order == null || !"pagado".equals(order.status)) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(page("Pedido no encontrado", ""));
 		}
-		Map<String, Object> refund = vp.refundPayment(order.uuid, order.amount);
+		Map<String, Object> refund = vp.refundPayment(order.uuid, order.amount, CUSTOMER_EMAIL);
 		order.status = "anulado";
+		log.info("Pedido {} anulado ({})", orderId, refund.get("status"));
 		return ResponseEntity.ok(page("Pago anulado",
 				"<p>Estado de la anulación: <strong>" + esc(String.valueOf(refund.get("status"))) + "</strong></p><p><a href=\"/\">Volver</a></p>"));
 	}
@@ -164,6 +166,7 @@ public class TiendaController {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> error(Exception err) {
+		log.error("Error: {}", err.getMessage());
 		String hint = err instanceof VirtualposException vpe ? vpe.getHint() : null;
 		return ResponseEntity.status(HttpStatus.BAD_GATEWAY).contentType(MediaType.TEXT_HTML)
 				.body(page("Ocurrió un error", "<p><code>" + esc(err.getMessage()) + "</code></p>"

@@ -19,8 +19,14 @@ export function hintFor(message = '') {
   if (m.includes('missing required request parameters')) {
     return 'Faltan los headers Authorization o Signature.';
   }
+  if (m.includes('expirado') || m.includes('emitido en el futuro')) {
+    return 'La firma expiró. Este endpoint firma con la hora actual (ciat) y tolera 5 minutos: sincroniza el reloj de tu servidor (NTP).';
+  }
+  if (m.includes('no tiene permitido anular')) {
+    return 'Este pago no se puede anular por API: depende del tipo de pago (por ejemplo, cuotas sin interés) y de tu contrato. Revísalo con tu ejecutivo.';
+  }
   if (m.includes('firma')) {
-    return 'Firma rechazada. Firma con la SECRET KEY del mismo ambiente que tu API KEY, algoritmo HS256 y payload {"api_key": "<tu API KEY>"}.';
+    return 'Firma rechazada. Firma con la SECRET KEY del mismo ambiente que tu API KEY, algoritmo HS256 y payload {"api_key": "<tu API KEY>"} (para anular: {"ciat": <hora actual>, "email": "..."}).';
   }
   if (m.includes('no existe el comercio') || m.includes('no existe cuenta')) {
     return 'Tu API KEY no existe en este ambiente. ¿Estás usando llaves de Producción contra Sandbox, o al revés?';
@@ -46,18 +52,24 @@ export class Virtualpos {
     return jwt.sign({ api_key: this.apiKey }, this.secretKey, { algorithm: 'HS256', noTimestamp: true });
   }
 
-  async request(method, path, body) {
+  // Anular usa otra firma: JWT HS256 con la hora actual (ciat, en segundos) y un email. Tolera 5 minutos.
+  refundSignature(email) {
+    return jwt.sign({ ciat: Math.floor(Date.now() / 1000), email }, this.secretKey, { algorithm: 'HS256', noTimestamp: true });
+  }
+
+  async request(method, path, body, signature = this.signature()) {
     const res = await fetch(this.apiUrl + path, {
       method,
       headers: {
         'Content-Type': 'application/json',
         Authorization: this.apiKey,
-        Signature: this.signature(),
+        Signature: signature,
       },
       body: body ? JSON.stringify(body) : undefined,
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok || data.status === 'NOK') {
+    // Algunos errores llegan con HTTP 200: revisa también status y error en el cuerpo.
+    if (!res.ok || data.status === 'NOK' || data.error) {
       throw new VirtualposError(res.status, data.error?.error_code, data.error?.message ?? data.message ?? res.statusText);
     }
     return data;
@@ -79,8 +91,8 @@ export class Virtualpos {
   }
 
   // POST /v3/payment/{uuid}/refund — https://docs.virtualpos.cl/payments/anular-un-payment/
-  refundPayment(uuid, amount) {
-    return this.request('POST', `/v3/payment/${encodeURIComponent(uuid)}/refund`, { amount });
+  refundPayment(uuid, amount, email) {
+    return this.request('POST', `/v3/payment/${encodeURIComponent(uuid)}/refund`, { amount }, this.refundSignature(email));
   }
 }
 

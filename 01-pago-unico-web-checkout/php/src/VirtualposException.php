@@ -23,8 +23,12 @@ final class VirtualposException extends \RuntimeException
         return match (true) {
             str_contains($m, 'missing required request parameters') =>
                 'Faltan los headers Authorization o Signature.',
+            str_contains($m, 'expirado'), str_contains($m, 'emitido en el futuro') =>
+                'La firma expiró. Este endpoint firma con la hora actual (ciat) y tolera 5 minutos: sincroniza el reloj de tu servidor (NTP).',
+            str_contains($m, 'no tiene permitido anular') =>
+                'Este pago no se puede anular por API: depende del tipo de pago (por ejemplo, cuotas sin interés) y de tu contrato. Revísalo con tu ejecutivo.',
             str_contains($m, 'firma') =>
-                'Firma rechazada. Firma con la SECRET KEY del mismo ambiente que tu API KEY, algoritmo HS256 y payload {"api_key": "<tu API KEY>"}.',
+                'Firma rechazada. Firma con la SECRET KEY del mismo ambiente que tu API KEY, algoritmo HS256 y payload {"api_key": "<tu API KEY>"} (para anular: {"ciat": <hora actual>, "email": "..."}).',
             str_contains($m, 'no existe el comercio'), str_contains($m, 'no existe cuenta') =>
                 'Tu API KEY no existe en este ambiente. ¿Estás usando llaves de Producción contra Sandbox, o al revés?',
             str_contains($m, 'contrato'), str_contains($m, 'no está habilitado'), str_contains($m, 'no esta habilitado') =>

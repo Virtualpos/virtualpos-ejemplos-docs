@@ -8,6 +8,7 @@ use Ejemplo\Orders;
 use Ejemplo\Virtualpos;
 use Ejemplo\VirtualposException;
 
+const CUSTOMER_EMAIL = 'cliente@example.com'; // en tu sistema, el email de tu cliente
 const FINAL_STATES = ['pagado', 'rechazado', 'expirado', 'cancelado', 'anulado'];
 
 $vp = Virtualpos::fromEnv();
@@ -28,7 +29,7 @@ try {
         $amount = 9990;
         $res = $vp->createPayment([
             'amount' => $amount,
-            'email' => 'cliente@example.com',
+            'email' => CUSTOMER_EMAIL,
             'social_id' => '11111111-1',
             'first_name' => 'Ana',
             'last_name' => 'Pérez',
@@ -71,9 +72,10 @@ try {
             http_response_code(404);
             page('Pedido no encontrado', '');
         } else {
-            $refund = $vp->refundPayment($order['uuid'], $order['amount']);
+            $refund = $vp->refundPayment($order['uuid'], $order['amount'], CUSTOMER_EMAIL);
             $order['status'] = 'anulado';
             Orders::save($order);
+            error_log("Pedido {$order['orderId']} anulado ({$refund['status']})");
             page('Pago anulado', '<p>Estado de la anulación: <strong>' . e($refund['status']) . '</strong></p><p><a href="/">Volver</a></p>');
         }
     }
@@ -84,6 +86,7 @@ try {
     }
 } catch (\Throwable $err) {
     http_response_code(502);
+    error_log("Error en $path: {$err->getMessage()}");
     $hint = $err instanceof VirtualposException ? $err->hint : null;
     page('Ocurrió un error', '<p><code>' . e($err->getMessage()) . '</code></p>' .
         ($hint ? '<p>' . e($hint) . '</p>' : '') . '<p><a href="/">Volver</a></p>');

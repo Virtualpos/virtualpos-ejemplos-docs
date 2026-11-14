@@ -38,6 +38,12 @@ final class Virtualpos
         return JWT::encode(['api_key' => $this->apiKey], $this->secretKey, 'HS256');
     }
 
+    // Anular usa otra firma: JWT HS256 con la hora actual (ciat, en segundos) y un email. Tolera 5 minutos.
+    public function refundSignature(string $email): string
+    {
+        return JWT::encode(['ciat' => time(), 'email' => $email], $this->secretKey, 'HS256');
+    }
+
     // POST /v3/payment/ — https://docs.virtualpos.cl/payments/crear-un-objeto-payment/
     public function createPayment(array $payment): array
     {
@@ -54,12 +60,12 @@ final class Virtualpos
     }
 
     // POST /v3/payment/{uuid}/refund — https://docs.virtualpos.cl/payments/anular-un-payment/
-    public function refundPayment(string $uuid, int $amount): array
+    public function refundPayment(string $uuid, int $amount, string $email): array
     {
-        return $this->request('POST', '/v3/payment/' . rawurlencode($uuid) . '/refund', ['amount' => $amount]);
+        return $this->request('POST', '/v3/payment/' . rawurlencode($uuid) . '/refund', ['amount' => $amount], $this->refundSignature($email));
     }
 
-    public function request(string $method, string $path, ?array $body = null): array
+    public function request(string $method, string $path, ?array $body = null, ?string $signature = null): array
     {
         $ch = curl_init($this->apiUrl . $path);
         curl_setopt_array($ch, [
@@ -69,7 +75,7 @@ final class Virtualpos
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Authorization: ' . $this->apiKey,
-                'Signature: ' . $this->signature(),
+                'Signature: ' . ($signature ?? $this->signature()),
             ],
         ]);
         if ($body !== null) {
@@ -82,7 +88,8 @@ final class Virtualpos
         $status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $data = json_decode($raw, true) ?? [];
 
-        if ($status >= 400 || ($data['status'] ?? null) === 'NOK') {
+        // Algunos errores llegan con HTTP 200: revisa también status y error en el cuerpo.
+        if ($status >= 400 || ($data['status'] ?? null) === 'NOK' || isset($data['error'])) {
             throw new VirtualposException(
                 $status,
                 $data['error']['error_code'] ?? null,

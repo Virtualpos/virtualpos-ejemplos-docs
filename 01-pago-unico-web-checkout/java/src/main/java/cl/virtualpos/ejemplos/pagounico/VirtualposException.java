@@ -30,8 +30,14 @@ public class VirtualposException extends RuntimeException {
 		if (m.contains("missing required request parameters")) {
 			return "Faltan los headers Authorization o Signature.";
 		}
+		if (m.contains("expirado") || m.contains("emitido en el futuro")) {
+			return "La firma expiró. Este endpoint firma con la hora actual (ciat) y tolera 5 minutos: sincroniza el reloj de tu servidor (NTP).";
+		}
+		if (m.contains("no tiene permitido anular")) {
+			return "Este pago no se puede anular por API: depende del tipo de pago (por ejemplo, cuotas sin interés) y de tu contrato. Revísalo con tu ejecutivo.";
+		}
 		if (m.contains("firma")) {
-			return "Firma rechazada. Firma con la SECRET KEY del mismo ambiente que tu API KEY, algoritmo HS256 y payload {\"api_key\": \"<tu API KEY>\"}.";
+			return "Firma rechazada. Firma con la SECRET KEY del mismo ambiente que tu API KEY, algoritmo HS256 y payload {\"api_key\": \"<tu API KEY>\"} (para anular: {\"ciat\": <hora actual>, \"email\": \"...\"}).";
 		}
 		if (m.contains("no existe el comercio") || m.contains("no existe cuenta")) {
 			return "Tu API KEY no existe en este ambiente. ¿Estás usando llaves de Producción contra Sandbox, o al revés?";
