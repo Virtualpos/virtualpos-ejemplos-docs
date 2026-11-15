@@ -1,0 +1,14 @@
+{
+  "name": "virtualpos-venta-pos-desde-erp",
+  "private": true,
+  "type": "module",
+  "description": "Ejemplo: cobrar una venta en un POS Virtualpos desde tu ERP o caja (POS Cloud to Cloud)",
+  "engines": { "node": ">=20.6" },
+  "scripts": {
+    "start": "node --env-file=.env src/server.js",
+    "verificar": "node --env-file=.env src/verificar.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
