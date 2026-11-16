@@ -1,0 +1,15 @@
+{
+  "name": "virtualpos-garantia-online-checkins",
+  "private": true,
+  "type": "module",
+  "description": "Ejemplo: tomar y cobrar una garantía online con Checkins de Virtualpos",
+  "engines": { "node": ">=20.6" },
+  "scripts": {
+    "start": "node --env-file=.env src/server.js",
+    "verificar": "node --env-file=.env src/verificar.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
