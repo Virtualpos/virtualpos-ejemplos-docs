@@ -1,0 +1,14 @@
+{
+  "name": "virtualpos-garantia-pos",
+  "private": true,
+  "type": "module",
+  "description": "Ejemplo: garantía con preautorización (check-in) y cierre (check-out) en un POS Virtualpos (POS Cloud to Cloud)",
+  "engines": { "node": ">=20.6" },
+  "scripts": {
+    "start": "node --env-file=.env src/server.js",
+    "verificar": "node --env-file=.env src/verificar.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
