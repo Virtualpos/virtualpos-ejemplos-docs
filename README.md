@@ -6,6 +6,10 @@ Código de ejemplo de las [guías de docs.virtualpos.cl](https://docs.virtualpos
 | --- | --- | --- | --- | --- |
 | [Cobrar un pago único con Web Checkout](https://docs.virtualpos.cl/guias/pago-unico-web-checkout/) | [`01-pago-unico-web-checkout`](01-pago-unico-web-checkout/) | ✔ | ✔ | ✔ |
 | [Cobrar una venta en el POS desde tu ERP](https://docs.virtualpos.cl/guias/venta-pos-desde-erp/) | [`02-venta-pos-desde-erp`](02-venta-pos-desde-erp/) | ✔ | ✔ | ✔ |
+| [Cobrar por link (email, WhatsApp o SMS)](https://docs.virtualpos.cl/guias/cobro-por-link/) | [`03-cobro-por-link`](03-cobro-por-link/) | ✔ | ✔ | ✔ |
+| [Cobrar una suscripción mensual](https://docs.virtualpos.cl/guias/suscripcion-mensual/) | [`04-suscripcion-mensual`](04-suscripcion-mensual/) | ✔ | ✔ | ✔ |
+| [Garantía con el POS: preautorización y cierre](https://docs.virtualpos.cl/guias/garantia-pos/) | [`05-garantia-pos`](05-garantia-pos/) | ✔ | ✔ | ✔ |
+| [Tomar y cobrar una garantía online con Checkins](https://docs.virtualpos.cl/guias/garantia-online-checkins/) | [`06-garantia-online-checkins`](06-garantia-online-checkins/) | ✔ | ✔ | ✔ |
 
 ## Antes de comenzar
 
