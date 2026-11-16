@@ -1,0 +1,16 @@
+{
+  "name": "virtualpos-suscripcion-mensual",
+  "private": true,
+  "type": "module",
+  "description": "Ejemplo: cobrar una suscripción mensual con Pagar y suscribir de Virtualpos",
+  "engines": { "node": ">=20.6" },
+  "scripts": {
+    "start": "node --env-file=.env src/server.js",
+    "verificar": "node --env-file=.env src/verificar.js",
+    "crear-plan": "node --env-file=.env src/crear-plan.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
