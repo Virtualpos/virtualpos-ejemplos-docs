@@ -10,6 +10,7 @@ Código de ejemplo de las [guías de docs.virtualpos.cl](https://docs.virtualpos
 | [Cobrar una suscripción mensual](https://docs.virtualpos.cl/guias/suscripcion-mensual/) | [`04-suscripcion-mensual`](04-suscripcion-mensual/) | ✔ | ✔ | ✔ |
 | [Garantía con el POS: preautorización y cierre](https://docs.virtualpos.cl/guias/garantia-pos/) | [`05-garantia-pos`](05-garantia-pos/) | ✔ | ✔ | ✔ |
 | [Tomar y cobrar una garantía online con Checkins](https://docs.virtualpos.cl/guias/garantia-online-checkins/) | [`06-garantia-online-checkins`](06-garantia-online-checkins/) | ✔ | ✔ | ✔ |
+| [Suscribir clientes en el POS desde tu CRM](https://docs.virtualpos.cl/guias/suscripcion-pos-desde-crm/) | [`07-suscripcion-pos-desde-crm`](07-suscripcion-pos-desde-crm/) | ✔ | ✔ | ✔ |
 
 ## Antes de comenzar
 
