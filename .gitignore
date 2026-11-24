@@ -1,5 +1,7 @@
 # Credenciales: nunca las subas al repositorio
 .env
+.env.*
+!.env.example
 
 # Node
 node_modules/

@@ -1,0 +1,20 @@
+{
+    "name": "virtualpos/ejemplo-suscripcion-pos-desde-crm",
+    "description": "Ejemplo: suscribir clientes en el POS de Virtualpos desde tu CRM",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "firebase/php-jwt": "^7.0"
+    },
+    "autoload": {
+        "psr-4": { "Ejemplo\\": "src/" }
+    },
+    "scripts": {
+        "start": ["Composer\\Config::disableProcessTimeout", "php -S localhost:8000 -t public"],
+        "verificar": "php bin/verificar.php",
+        "crear-plan": "php bin/crear-plan.php"
+    }
+}
